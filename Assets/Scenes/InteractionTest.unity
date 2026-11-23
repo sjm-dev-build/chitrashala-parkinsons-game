@@ -971,7 +971,7 @@ Transform:
   m_GameObject: {fileID: 1658451305}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.366, y: 0.322, z: 0.207}
+  m_LocalPosition: {x: 0.373, y: 0.328, z: 0.207}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1485,7 +1485,7 @@ GameObject:
   - component: {fileID: 1887522167}
   - component: {fileID: 1887522171}
   m_Layer: 0
-  m_Name: Quad (1)
+  m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1600,7 +1600,14 @@ MonoBehaviour:
   brushRadius: 10
   brushColor: {r: 0.9607843, g: 0.92941177, b: 0.8784314, a: 1}
   backgroundColor: {r: 0.70980394, g: 0.34901962, b: 0.22745098, a: 1}
+  guideColor: {r: 0.85, g: 0.6, b: 0.5, a: 1}
   touchDistance: 0.06
+  guideArt: {fileID: 0}
+  alphaThreshold: 0.3
+  tolerance: 10
+  winCoverage: 0.8
+  ringRadius: 0.3
+  ringThickness: 0.05
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
