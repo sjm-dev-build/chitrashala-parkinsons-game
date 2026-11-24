@@ -7,21 +7,26 @@ public class CanvasPainter : MonoBehaviour
     public Transform cursor;
 
     public int textureSize = 512;
-    public int brushRadius = 8;
+    public int brushRadius = 6;
     public Color brushColor = Color.white;
     public Color backgroundColor = new Color(0.71f, 0.35f, 0.23f);
     public Color guideColor = new Color(0.85f, 0.6f, 0.5f);
-    public float touchDistance = 0.06f;
+
+    [Header("Touch and smoothing")]
+    public float touchDistance = 0.05f;
+    public float releaseDistance = 0.09f;
+    public float smoothFactor = 0.15f;
+    public float maxJump = 0.12f;
 
     [Header("Trace target")]
     public Texture2D guideArt;
     public float alphaThreshold = 0.3f;
-    public int tolerance = 12;       // pixels around the art that don't count as mistakes
-    public float winCoverage = 0.7f;
+    public int tolerance = 20;
+    public float winCoverage = 0.5f;
 
     [Header("Fallback ring (used if no art is assigned)")]
     public float ringRadius = 0.30f;
-    public float ringThickness = 0.05f;
+    public float ringThickness = 0.08f;
 
     Texture2D tex;
     bool[] isTarget, isNear, isPainted;
@@ -29,6 +34,8 @@ public class CanvasPainter : MonoBehaviour
     bool done;
     Vector2 lastUV;
     bool hasLast;
+    Vector3 smoothed;
+    bool hasSmoothed, wasTouching;
 
     void Start()
     {
@@ -90,22 +97,28 @@ public class CanvasPainter : MonoBehaviour
     {
         if (done) return;
 
-        Vector3 local = transform.InverseTransformPoint(fingertip.position);
+        if (!hasSmoothed) { smoothed = fingertip.position; hasSmoothed = true; }
+        else smoothed = Vector3.Lerp(smoothed, fingertip.position, smoothFactor);
+
+        Vector3 local = transform.InverseTransformPoint(smoothed);
         bool inBounds = Mathf.Abs(local.x) <= 0.5f && Mathf.Abs(local.y) <= 0.5f;
-        float dist = Mathf.Abs(Vector3.Dot(fingertip.position - transform.position, transform.forward));
-        bool touching = inBounds && dist < touchDistance;
+        float dist = Mathf.Abs(Vector3.Dot(smoothed - transform.position, transform.forward));
+        bool touching = inBounds && (wasTouching ? dist < releaseDistance : dist < touchDistance);
+        wasTouching = touching;
 
         if (cursor != null)
         {
             cursor.gameObject.SetActive(inBounds);
             cursor.position = transform.TransformPoint(new Vector3(local.x, local.y, 0));
             if (cursorRenderer != null)
-                cursorRenderer.material.color = touching ? brushColor : Color.gray;
+                cursorRenderer.material.color = touching ? Color.green : Color.gray;
         }
 
         if (touching)
         {
             Vector2 uv = new Vector2(local.x + 0.5f, local.y + 0.5f);
+            if (hasLast && Vector2.Distance(lastUV, uv) > maxJump) hasLast = false;
+
             if (hasLast)
             {
                 int steps = Mathf.CeilToInt(Vector2.Distance(lastUV, uv) * textureSize);
@@ -154,8 +167,13 @@ public class CanvasPainter : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.skin.label.fontSize = 28;
-        GUI.Label(new Rect(20, 20, 600, 40), "Traced: " + Mathf.RoundToInt(Coverage() * 100) + "%");
-        if (done) GUI.Label(new Rect(20, 60, 600, 40), "Level complete!");
+    GUI.skin.label.fontSize = 28;
+    GUI.Label(new Rect(20, 20, 600, 40), "Traced: " + Mathf.RoundToInt(Coverage() * 100) + "%");
+    if (done) GUI.Label(new Rect(20, 60, 600, 40), "Level complete!");
+
+    GUI.skin.label.fontSize = 22;
+    GUI.Label(new Rect(20, 110, 300, 30), "Brush size: " + brushRadius);
+    brushRadius = Mathf.RoundToInt(
+        GUI.HorizontalSlider(new Rect(20, 145, 260, 30), brushRadius, 2, 30));
     }
 }

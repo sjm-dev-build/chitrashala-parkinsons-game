@@ -1597,17 +1597,20 @@ MonoBehaviour:
   cursorRenderer: {fileID: 1404373206}
   cursor: {fileID: 1404373208}
   textureSize: 512
-  brushRadius: 10
+  brushRadius: 8
   brushColor: {r: 0.9607843, g: 0.92941177, b: 0.8784314, a: 1}
   backgroundColor: {r: 0.70980394, g: 0.34901962, b: 0.22745098, a: 1}
   guideColor: {r: 0.85, g: 0.6, b: 0.5, a: 1}
-  touchDistance: 0.06
-  guideArt: {fileID: 0}
+  touchDistance: 0.05
+  releaseDistance: 0.09
+  smoothFactor: 0.4
+  maxJump: 0.12
+  guideArt: {fileID: 2800000, guid: 88252cd27aec65c4c9b8fea6f42f0b0d, type: 3}
   alphaThreshold: 0.3
-  tolerance: 10
+  tolerance: 20
   winCoverage: 0.8
   ringRadius: 0.3
-  ringThickness: 0.05
+  ringThickness: 0.04
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
